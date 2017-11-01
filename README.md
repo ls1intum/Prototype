@@ -4,9 +4,11 @@
 [![License](https://img.shields.io/cocoapods/l/Prototype.svg?style=flat)](http://cocoapods.org/pods/Prototype)
 [![Platform](https://img.shields.io/cocoapods/p/Prototype.svg?style=flat)](http://cocoapods.org/pods/Prototype)
 
+The prototype framework allows you to integrate .prototype files created with the macOS Prototype-Application into your iOS, macOS or tvOS application. You can configure and inspect the `PrototypeView` using the Xcode Interface Builder with ease.
+
 ## Example
 
-To run the example project, open the PrototypeExample.workspace and select one of the three provided targets (iOS, macOS, and tvOS) and run the project.
+Run `pod install` from the Example directory first and open the PrototypeExample.workspace and select one of the three provided targets (iOS, macOS, and tvOS) and run the project.
 
 ## Requirements
 
