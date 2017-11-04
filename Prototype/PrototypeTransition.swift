@@ -13,8 +13,11 @@ import Foundation
 
 enum PrototypeTransitionTyp: String, Codable {
     case none
+    case fade
     case pushRight
     case pushLeft
+    case slideUp
+    case slideDown
 }
 
 class PrototypeTransition: Codable {

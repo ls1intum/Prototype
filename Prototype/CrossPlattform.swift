@@ -29,3 +29,27 @@ import Foundation
     typealias Color = UIColor
     
 #endif
+
+#if os(OSX)
+    extension NSView {
+        var alpha: CGFloat {
+            set {
+                alphaValue = newValue
+            }
+            get {
+                return alphaValue
+            }
+        }
+        
+        var transform: CGAffineTransform {
+            set {
+                wantsLayer = true
+                layer?.setAffineTransform(transform)
+            }
+            get {
+                wantsLayer = true
+                return layer!.affineTransform()
+            }
+        }
+    }
+#endif

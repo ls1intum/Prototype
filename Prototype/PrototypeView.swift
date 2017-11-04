@@ -185,40 +185,58 @@
             return
         }
         
-        let imageView = ImageView(image: image)
+        let newPageImageView = ImageView(image: image)
         #if os(OSX)
-            imageView.imageScaling = .scaleProportionallyDown
-            imageView.wantsLayer = true
-            imageView.layerContentsRedrawPolicy = .onSetNeedsDisplay
+            newPageImageView.imageScaling = .scaleProportionallyDown
+            newPageImageView.wantsLayer = true
+            newPageImageView.layerContentsRedrawPolicy = .onSetNeedsDisplay
         #elseif os(iOS) || os(tvOS)
-            imageView.contentMode = .scaleToFill
+            newPageImageView.contentMode = .scaleToFill
         #endif
+        newPageImageView.frame = imageView.frame
+        addSubview(newPageImageView)
+        
+        var currentImageViewTransform = CGAffineTransform.identity
         
         switch transition.transitionType {
         case .none:
+            newPageImageView.removeFromSuperview()
             completion(true)
             return
-        case .pushRight:
-            imageView.frame = CGRect(x: bounds.size.width, y: 0, width: bounds.size.width, height: bounds.size.height)
+        case .fade:
+            newPageImageView.alpha = 0.0
+        case .pushLeft: // Similar to iOS "Show" segue
+            newPageImageView.transform = CGAffineTransform(translationX: -bounds.size.width / 4, y: 0)
+            currentImageViewTransform = CGAffineTransform(translationX: bounds.size.width, y: 0)
             addSubview(imageView)
-        case .pushLeft:
-            imageView.frame = CGRect(x: -bounds.size.width, y: 0, width: bounds.size.width, height: bounds.size.height)
-            addSubview(imageView)
+        case .pushRight: // Similar to reversed iOS "Show" segue
+            newPageImageView.transform = CGAffineTransform(translationX: bounds.size.width, y: 0)
+            currentImageViewTransform = CGAffineTransform(translationX: -bounds.size.width / 4, y: 0)
+        case .slideUp:
+            newPageImageView.transform = CGAffineTransform(translationX: 0, y: -bounds.size.height)
+        case .slideDown:
+            newPageImageView.transform = CGAffineTransform(translationX: 0, y: bounds.size.height)
         }
         
         #if os(OSX)
             NSAnimationContext.runAnimationGroup({ (context: NSAnimationContext) in
                 context.duration = Constants.animationTime
-                imageView.animator().frame = CGRect(x: 0, y: 0, width: bounds.size.width, height: bounds.size.height)
+                newPageImageView.animator().transform = .identity
+                newPageImageView.animator().alpha = 1.0
+                self.imageView.animator().transform = currentImageViewTransform
             }, completionHandler: {
-                imageView.removeFromSuperview()
+                newPageImageView.removeFromSuperview()
+                self.imageView.transform = .identity
                 completion(true)
             })
         #elseif os(iOS) || os(tvOS)
             View.animate(withDuration: Constants.animationTime, animations: {
-                imageView.frame = CGRect(x: 0, y: 0, width: self.bounds.size.width, height: self.bounds.size.height)
+                newPageImageView.transform = .identity
+                newPageImageView.alpha = 1.0
+                self.imageView.transform = currentImageViewTransform
             }, completion: { (finished: Bool) in
-                imageView.removeFromSuperview()
+                newPageImageView.removeFromSuperview()
+                self.imageView.transform = .identity
                 completion(finished)
             })
         #endif

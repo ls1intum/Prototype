@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name             = 'Prototype'
-  spec.version          = '0.1'
+  spec.version          = '0.2'
   spec.summary          = 'Framework to integrate prototypes into iOS, macOS or tvOS applications'
 
   spec.description      = <<-DESC
