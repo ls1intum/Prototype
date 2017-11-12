@@ -50,23 +50,22 @@ class PrototypeFileHandler {
             
             let prototype = try JSONDecoder().decode(Prototype.self, from: jsonData)
             
-            for page in prototype.pages {
+            for (index, page) in prototype.pages.enumerated() {
                 guard let imageData = imageFileWrappers[page.imageName]?.regularFileContents, let image = Image(data: imageData) else {
                     print("Image not found or could not be found or converted")
                     return nil
                 }
-                page.image = image
+                prototype.pages[index].image = image
             }
             
             return prototype
-        } catch _ {
-            print("Prototype could not be decoded")
+        } catch {
+            print("Prototype could not be decoded: \(error)")
             return nil
         }
     }
     
     static func createFileWrapper(fromPrototype prototype: Prototype) -> FileWrapper? {
-        
         let prototypeFileWrapper = FileWrapper(directoryWithFileWrappers:[:])
         prototypeFileWrapper.preferredFilename = "\(prototype.name).prototype"
         
@@ -84,14 +83,17 @@ class PrototypeFileHandler {
         imageFolderFileWrapper.preferredFilename = Constants.imagesDirectoryName
         prototypeFileWrapper.addFileWrapper(imageFolderFileWrapper)
         
-        for page in prototype.pages where imageFolderFileWrapper.fileWrappers?.filter({$0.0 == page.imageName}).keys.first == nil {
+        for var page in prototype.pages where imageFolderFileWrapper.fileWrappers?.filter({$0.0 == page.imageName}).keys.first == nil {
             #if os(OSX)
-                guard let image = page.image, let imageData = image.tiffRepresentation, let imageRep = NSBitmapImageRep(data: imageData), let imageJPGData = imageRep.representation(using: .jpeg, properties: [:]) else {
+                guard let imageData = page.image?.tiffRepresentation,
+                      let imageRep = NSBitmapImageRep(data: imageData),
+                      let imageJPGData = imageRep.representation(using: .jpeg, properties: [:]) else {
                     print("Image not found or could not be converted")
                     return nil
                 }
             #elseif os(iOS) || os(tvOS)
-                guard let image = page.image, let imageJPGData = UIImageJPEGRepresentation(image,1.0) else {
+                guard let image = page.image,
+                      let imageJPGData = UIImageJPEGRepresentation(image,1.0) else {
                     print("Image not found or could not be converted")
                     return nil
                 }

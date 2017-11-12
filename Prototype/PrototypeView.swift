@@ -20,7 +20,7 @@
 @IBDesignable public class PrototypeView: View {
     
     private struct Constants {
-        static let buttonColor = Color(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+        static let buttonColor = #colorLiteral(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
         static let fadeInAndOutButtonsTime = 0.1
         static let showButtonsTime = 0.5
         static let animationTime = 0.25
@@ -54,13 +54,26 @@
     
     private var currentPage: PrototypePage? {
         didSet {
-            if let currentPage = currentPage, let delegate = delegate {
-                delegate.didChange(toPageID: currentPage.id)
+            guard let currentPage = currentPage else {
+                return
             }
+            
+            delegate?.didChange(toPageID: currentPage.id)
+            if let automaticTransition = currentPage.transitions.filter({ $0.automaticTransitionTimer != nil })
+                                                                .sorted(by: { $0.automaticTransitionTimer! < $1.automaticTransitionTimer! })
+                                                                .first,
+               let automaticTransitionTime = automaticTransition.automaticTransitionTimer {
+                timer = Timer.scheduledTimer(withTimeInterval: automaticTransitionTime, repeats: false, block: { _ in
+                    self.perform(transition: automaticTransition)
+                })
+            }
+            
             loadPage()
         }
     }
     private let imageView = ImageView()
+    private var transitionHistory = [(originalPageId: Int, transitionType: PrototypeTransitionType)]()
+    private var timer: Timer?
     
     // MARK: - Initializers
     
@@ -80,6 +93,16 @@
         super.awakeFromNib()
         loadPrototype()
         setupView()
+    }
+    
+    private func loadPrototype() {
+        if prototype == nil && prototypeName != Constants.noPrototypeName {
+            #if !TARGET_INTERFACE_BUILDER
+                prototype = PrototypeFileHandler.prototype(forName: prototypeName)
+            #else
+                prototype = PrototypeFileHandler.prototypeInInterfaceBuilder(withName: prototypeName)
+            #endif
+        }
     }
     
     private func setupView(){
@@ -104,16 +127,6 @@
         #endif
     }
     
-    private func loadPrototype() {
-        if prototype == nil && prototypeName != Constants.noPrototypeName {
-            #if !TARGET_INTERFACE_BUILDER
-                prototype = PrototypeFileHandler.prototype(forName: prototypeName)
-            #else
-                prototype = PrototypeFileHandler.prototypeInInterfaceBuilder(withName: prototypeName)
-            #endif
-        }
-    }
-    
     private func loadPage() {
         if let image = currentPage?.image {
             imageView.image = image
@@ -133,7 +146,8 @@
     open override func draw(_ rect: CGRect) {
         super.draw(rect)
         
-        guard let currentPage = currentPage, let image = currentPage.image else {
+        guard let currentPage = currentPage,
+              let image = currentPage.image else {
             return
         }
         
@@ -179,65 +193,84 @@
         }
     }
     
-    private func perform(transition: PrototypeTransition, completion: @escaping ((Bool) -> Void)) {
-        guard let image = prototype?.pages.filter({$0.id == transition.destinationID}).first?.image else {
-            completion(false)
+    private func perform(transition: PrototypeTransition) {
+        timer?.invalidate()
+        
+        let (destinationPageId, transitionType): (Int, PrototypeTransitionType) = {
+            switch transition.destination {
+            case let .page(destinationPageId):
+                transitionHistory.append((currentPage!.id, transition.transitionType))
+                return (destinationPageId, transition.transitionType)
+            case .back:
+                let lastTransition = transitionHistory.popLast()
+                return (lastTransition?.originalPageId ?? currentPage!.id,
+                        !(lastTransition?.transitionType ?? .none))
+            }
+        }()
+        delegate?.willChange(toPageID: destinationPageId)
+        
+        guard let destinationPage = prototype?.pages.filter({$0.id == destinationPageId}).first,
+              let destinationImage = destinationPage.image else {
             return
         }
         
-        let newPageImageView = ImageView(image: image)
+        func completion() {
+            self.currentPage = destinationPage
+        }
+        
+        let destinationImageView = ImageView(image: destinationImage)
         #if os(OSX)
-            newPageImageView.imageScaling = .scaleProportionallyDown
-            newPageImageView.wantsLayer = true
-            newPageImageView.layerContentsRedrawPolicy = .onSetNeedsDisplay
+            destinationImageView.imageScaling = .scaleProportionallyDown
+            destinationImageView.wantsLayer = true
+            destinationImageView.layerContentsRedrawPolicy = .onSetNeedsDisplay
         #elseif os(iOS) || os(tvOS)
-            newPageImageView.contentMode = .scaleToFill
+            destinationImageView.contentMode = .scaleToFill
         #endif
-        newPageImageView.frame = imageView.frame
-        addSubview(newPageImageView)
+        destinationImageView.frame = imageView.frame
+        addSubview(destinationImageView)
         
         var currentImageViewTransform = CGAffineTransform.identity
         
-        switch transition.transitionType {
+        switch transitionType {
         case .none:
-            newPageImageView.removeFromSuperview()
-            completion(true)
+            destinationImageView.removeFromSuperview()
+            completion()
             return
         case .fade:
-            newPageImageView.alpha = 0.0
+            destinationImageView.alpha = 0.0
         case .pushLeft: // Similar to iOS "Show" segue
-            newPageImageView.transform = CGAffineTransform(translationX: -bounds.size.width / 4, y: 0)
+            destinationImageView.transform = CGAffineTransform(translationX: -bounds.size.width / 4, y: 0)
             currentImageViewTransform = CGAffineTransform(translationX: bounds.size.width, y: 0)
             addSubview(imageView)
         case .pushRight: // Similar to reversed iOS "Show" segue
-            newPageImageView.transform = CGAffineTransform(translationX: bounds.size.width, y: 0)
+            destinationImageView.transform = CGAffineTransform(translationX: bounds.size.width, y: 0)
             currentImageViewTransform = CGAffineTransform(translationX: -bounds.size.width / 4, y: 0)
         case .slideUp:
-            newPageImageView.transform = CGAffineTransform(translationX: 0, y: -bounds.size.height)
+            destinationImageView.transform = CGAffineTransform(translationX: 0, y: -bounds.size.height)
         case .slideDown:
-            newPageImageView.transform = CGAffineTransform(translationX: 0, y: bounds.size.height)
+            destinationImageView.transform = CGAffineTransform(translationX: 0, y: bounds.size.height)
         }
         
         #if os(OSX)
             NSAnimationContext.runAnimationGroup({ (context: NSAnimationContext) in
                 context.duration = Constants.animationTime
-                newPageImageView.animator().transform = .identity
-                newPageImageView.animator().alpha = 1.0
+                destinationImageView.animator().transform = .identity
+                destinationImageView.animator().alpha = 1.0
                 self.imageView.animator().transform = currentImageViewTransform
             }, completionHandler: {
-                newPageImageView.removeFromSuperview()
+                destinationImageView.removeFromSuperview()
                 self.imageView.transform = .identity
-                completion(true)
+                completion()
             })
         #elseif os(iOS) || os(tvOS)
             View.animate(withDuration: Constants.animationTime, animations: {
-                newPageImageView.transform = .identity
-                newPageImageView.alpha = 1.0
+                destinationImageView.transform = .identity
+                destinationImageView.alpha = 1.0
                 self.imageView.transform = currentImageViewTransform
             }, completion: { (finished: Bool) in
-                newPageImageView.removeFromSuperview()
+                destinationImageView.removeFromSuperview()
                 self.imageView.transform = .identity
-                completion(finished)
+                completion()
             })
         #endif
     }
@@ -248,13 +281,8 @@
         guard let transition = currentPage?.transitions.filter({$0.id == button.tag}).first else {
             return
         }
-        delegate?.willChange(toPageID: transition.id)
         
-        perform(transition: transition, completion: { (finished: Bool) in
-            if let newPage = self.prototype?.pages.filter({$0.id == transition.destinationID}).first {
-                self.currentPage = newPage
-            }
-        })
+        perform(transition: transition)
     }
     
     #if os(OSX)

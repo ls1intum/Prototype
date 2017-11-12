@@ -11,25 +11,24 @@ import Foundation
     import CoreGraphics
 #endif
 
-enum PrototypeTransitionTyp: String, Codable {
-    case none
-    case fade
-    case pushRight
-    case pushLeft
-    case slideUp
-    case slideDown
-}
-
-class PrototypeTransition: Codable {
+struct PrototypeTransition: Codable {
+    
     let id: Int
     let frame: CGRect
-    let destinationID: Int
-    let transitionType: PrototypeTransitionTyp
+    let transitionType: PrototypeTransitionType
+    var destination: PrototypeTransitionDestination
+    let automaticTransitionTimer: Double?
     
-    init(id: Int, frame: CGRect, destinationID: Int, transitionType: PrototypeTransitionTyp) {
+    init(id: Int,
+         frame: CGRect,
+         transitionType: PrototypeTransitionType,
+         destination: PrototypeTransitionDestination,
+         automaticTransitionTime: Double? = nil) {
+        
         self.id = id
         self.frame = frame
-        self.destinationID = destinationID
         self.transitionType = transitionType
+        self.destination = destination
+        self.automaticTransitionTimer = automaticTransitionTime
     }
 }
