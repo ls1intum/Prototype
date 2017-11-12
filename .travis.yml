@@ -1,7 +1,7 @@
 # references:
 # * https://docs.travis-ci.com/user/languages/objective-c/
 
-osx_image: xcode9.0
+osx_image: xcode9.1
 language: objective-c
 xcode_workspace: Example/Prototype Example.xcworkspace
 xcode_scheme:
@@ -9,9 +9,9 @@ xcode_scheme:
     - Prototype Example macOS
     - Prototype Example tvOS
 xcode_sdk:
-    - iphonesimulator11.0
+    - iphonesimulator11.1
     - macosx10.13
-    - appletvsimulator11.0
+    - appletvsimulator11.1
 podfile: Example/Podfile
 
 before_install:
