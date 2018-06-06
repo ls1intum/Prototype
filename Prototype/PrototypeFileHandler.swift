@@ -93,7 +93,7 @@ class PrototypeFileHandler {
                 }
             #elseif os(iOS) || os(tvOS)
                 guard let image = page.image,
-                      let imageJPGData = UIImageJPEGRepresentation(image,1.0) else {
+                      let imageJPGData = image.jpegData(compressionQuality: 1.0) else {
                     print("Image not found or could not be converted")
                     return nil
                 }

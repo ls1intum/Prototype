@@ -33,6 +33,11 @@ Create a .prototype file based on a prototype created with [Marvel App](https://
                 config.build_settings['CONFIGURATION_BUILD_DIR'] = '$PODS_CONFIGURATION_BUILD_DIR'
             end
         end
+
+        installer.pods_project.build_configurations.each do |config|
+            config.build_settings.delete('CODE_SIGNING_ALLOWED')
+            config.build_settings.delete('CODE_SIGNING_REQUIRED')
+        end
     end
     ```
 

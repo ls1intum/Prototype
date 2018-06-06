@@ -177,7 +177,7 @@
                     }
                 #endif
             #elseif os(iOS) || os(tvOS)
-                button.addTarget(self, action: #selector(buttonPressed(button:)), for: .primaryActionTriggered)
+                button.addTarget(self, action: #selector(buttonPressed(button:)), for: UIControl.Event.primaryActionTriggered)
                 
                 #if os(tvOS)
                     button.backgroundColor = Constants.buttonColor
@@ -303,10 +303,10 @@
                     button.layer?.backgroundColor = Color.clear.cgColor
                 })
             #elseif os(iOS) || os(tvOS)
-                View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: 0.0, options: .allowUserInteraction, animations: {
+                View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: 0.0, options: UIView.AnimationOptions.allowUserInteraction, animations: {
                     button.backgroundColor = Constants.buttonColor
                 }, completion: { (finished: Bool) in
-                    View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: Constants.showButtonsTime, options: .allowUserInteraction, animations: {
+                    View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: Constants.showButtonsTime, options: UIView.AnimationOptions.allowUserInteraction, animations: {
                         button.backgroundColor = .clear
                     })
                 })
