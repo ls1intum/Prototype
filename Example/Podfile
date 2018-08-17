@@ -1,21 +1,21 @@
 # Example Podfile for the Prototype framework
 
 target 'Prototype Example iOS' do
-  platform :ios, '10.0'
+  platform :ios, '11.0'
 
   use_frameworks!
   pod 'Prototype', :path => '../'
 end
 
 target 'Prototype Example macOS' do
-  platform :osx, '10.12'
+  platform :osx, '10.13'
 
   use_frameworks!
   pod 'Prototype', :path => '../'
 end
 
 target 'Prototype Example tvOS' do
-  platform :tvos, '10.0'
+  platform :tvos, '11.0'
 
   use_frameworks!
   pod 'Prototype', :path => '../'

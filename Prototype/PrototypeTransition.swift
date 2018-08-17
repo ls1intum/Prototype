@@ -3,7 +3,7 @@
 //  Prototype
 //
 //  Created by Paul Schmiedmayer on 7/3/17.
-//  Copyright © 2017 Paul Schmiedmayer. All rights reserved.
+//  Copyright © 2018 Paul Schmiedmayer. All rights reserved.
 //
 
 import Foundation

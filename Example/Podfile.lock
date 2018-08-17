@@ -1,5 +1,5 @@
 PODS:
-  - Prototype (0.3.1)
+  - Prototype (0.3.2)
 
 DEPENDENCIES:
   - Prototype (from `../`)
@@ -9,8 +9,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Prototype: c5658c76a66d323ddaecfebf546fd0ec59b394ca
+  Prototype: 11f9bb04e4c55656723a2e952a2b0f365eebc22a
 
-PODFILE CHECKSUM: 424fdd13981c3d7967e47959cf7a2b6170580e20
+PODFILE CHECKSUM: 4fd0514022b8969b77d8c5fd72a1246c75ee4396
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0.beta.1

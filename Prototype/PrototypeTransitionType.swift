@@ -3,7 +3,7 @@
 //  Pods
 //
 //  Created by Paul Schmiedmayer on 11/12/17.
-//  Copyright © 2017 Paul Schmiedmayer. All rights reserved.
+//  Copyright © 2018 Paul Schmiedmayer. All rights reserved.
 //
 
 enum PrototypeTransitionType: String, Codable {

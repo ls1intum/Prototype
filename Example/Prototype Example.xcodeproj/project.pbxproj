@@ -253,6 +253,7 @@
 					};
 					6589DBE11F1AB668008B4CB2 = {
 						CreatedOnToolsVersion = 9.0;
+						LastSwiftMigration = 1000;
 					};
 					6589DBF51F1AB739008B4CB2 = {
 						CreatedOnToolsVersion = 9.0;
@@ -322,7 +323,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example macOS/Pods-Prototype Example macOS-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Prototype Example macOS/Pods-Prototype Example macOS-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Prototype-macOS/Prototype.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -331,7 +332,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example macOS/Pods-Prototype Example macOS-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Prototype Example macOS/Pods-Prototype Example macOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		5916202B67A040CE58CF048A /* [CP] Check Pods Manifest.lock */ = {
@@ -358,7 +359,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example iOS/Pods-Prototype Example iOS-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Prototype Example iOS/Pods-Prototype Example iOS-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Prototype-iOS/Prototype.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -367,7 +368,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example iOS/Pods-Prototype Example iOS-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Prototype Example iOS/Pods-Prototype Example iOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7BC1C9B7B1A1B179E4DF7512 /* [CP] Check Pods Manifest.lock */ = {
@@ -412,7 +413,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example tvOS/Pods-Prototype Example tvOS-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Prototype Example tvOS/Pods-Prototype Example tvOS-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Prototype-tvOS/Prototype.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -421,7 +422,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Prototype Example tvOS/Pods-Prototype Example tvOS-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Prototype Example tvOS/Pods-Prototype Example tvOS-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -648,7 +649,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.schmiedmayer.Prototype-Example-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -667,7 +668,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.schmiedmayer.Prototype-Example-macOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};

@@ -3,7 +3,7 @@
 //  Prototype
 //
 //  Created by Paul Schmiedmayer on 7/3/17.
-//  Copyright © 2017 Paul Schmiedmayer. All rights reserved.
+//  Copyright © 2018 Paul Schmiedmayer. All rights reserved.
 //
 
 import Foundation
@@ -13,9 +13,9 @@ import Foundation
     import UIKit
 #endif
 
-class PrototypeFileHandler {
+enum PrototypeFileHandler {
     
-    struct Constants {
+    private enum Constants {
         static let jsonFileName = "content.json"
         static let imagesDirectoryName = "images"
     }
@@ -51,7 +51,8 @@ class PrototypeFileHandler {
             let prototype = try JSONDecoder().decode(Prototype.self, from: jsonData)
             
             for (index, page) in prototype.pages.enumerated() {
-                guard let imageData = imageFileWrappers[page.imageName]?.regularFileContents, let image = Image(data: imageData) else {
+                guard let imageData = imageFileWrappers[page.imageName]?.regularFileContents,
+                      let image = Image(data: imageData) else {
                     print("Image not found or could not be found or converted")
                     return nil
                 }
@@ -66,7 +67,7 @@ class PrototypeFileHandler {
     }
     
     static func createFileWrapper(fromPrototype prototype: Prototype) -> FileWrapper? {
-        let prototypeFileWrapper = FileWrapper(directoryWithFileWrappers:[:])
+        let prototypeFileWrapper = FileWrapper(directoryWithFileWrappers: [:])
         prototypeFileWrapper.preferredFilename = "\(prototype.name).prototype"
         
         do {
@@ -79,11 +80,12 @@ class PrototypeFileHandler {
             return nil
         }
         
-        let imageFolderFileWrapper = FileWrapper(directoryWithFileWrappers:[:])
+        let imageFolderFileWrapper = FileWrapper(directoryWithFileWrappers: [:])
         imageFolderFileWrapper.preferredFilename = Constants.imagesDirectoryName
         prototypeFileWrapper.addFileWrapper(imageFolderFileWrapper)
         
-        for var page in prototype.pages where imageFolderFileWrapper.fileWrappers?.filter({$0.0 == page.imageName}).keys.first == nil {
+        for var page in prototype.pages
+            where imageFolderFileWrapper.fileWrappers?.filter({ $0.0 == page.imageName }).keys.first == nil {
             #if os(OSX)
                 guard let imageData = page.image?.tiffRepresentation,
                       let imageRep = NSBitmapImageRep(data: imageData),
@@ -110,18 +112,22 @@ class PrototypeFileHandler {
 
 extension PrototypeFileHandler {
     static func prototypeInInterfaceBuilder(withName prototypeName: String) -> Prototype? {
-        let directories = ProcessInfo.processInfo.environment["IB_PROJECT_SOURCE_DIRECTORIES"]!.components(separatedBy: ":")
-        if var firstPath = directories.first {
-            firstPath = NSString(string: firstPath).deletingLastPathComponent
-            
-            let enumerator = FileManager.default.enumerator(atPath: firstPath)
-            while let element = enumerator?.nextObject() as? NSString {
-                if element.hasSuffix("prototype") && NSString(string: element.lastPathComponent).deletingPathExtension == prototypeName {
-                    let prototypePath = firstPath.appending("/"+(element as String))
-                    return PrototypeFileHandler.prototype(fromPath: prototypePath)
-                }
+        guard let ibProjectSourceDirectory = ProcessInfo.processInfo.environment["IB_PROJECT_SOURCE_DIRECTORIES"]?
+                                                        .components(separatedBy: ":").first else {
+            return nil
+        }
+        
+        let firstPath = NSString(string: ibProjectSourceDirectory).deletingLastPathComponent
+        
+        let enumerator = FileManager.default.enumerator(atPath: firstPath)
+        while let element = enumerator?.nextObject() as? NSString {
+            if element.hasSuffix("prototype")
+               && NSString(string: element.lastPathComponent).deletingPathExtension == prototypeName {
+                let prototypePath = firstPath.appending("/"+(element as String))
+                return PrototypeFileHandler.prototype(fromPath: prototypePath)
             }
         }
+        
         return nil
     }
 }

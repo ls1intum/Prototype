@@ -3,7 +3,7 @@
 //  Prototype
 //
 //  Created by Paul Schmiedmayer on 7/3/17.
-//  Copyright © 2017 Paul Schmiedmayer. All rights reserved.
+//  Copyright © 2018 Paul Schmiedmayer. All rights reserved.
 //
 
 #if os(OSX)
@@ -19,7 +19,7 @@
 
 @IBDesignable public class PrototypeView: View {
     
-    private struct Constants {
+    private enum Constants {
         static let buttonColor = #colorLiteral(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
         static let fadeInAndOutButtonsTime = 0.1
         static let showButtonsTime = 0.5
@@ -36,7 +36,7 @@
     }
     @IBInspectable public var startPage: Int = Constants.noStartPage {
         didSet {
-            if startPage != Constants.noStartPage, let page = prototype?.pages.filter({$0.id == startPage}).first {
+            if startPage != Constants.noStartPage, let page = prototype?.pages.first(where: { $0.id == startPage }) {
                 currentPage = page
             }
         }
@@ -60,8 +60,8 @@
             
             delegate?.didChange(toPageID: currentPage.id)
             if let automaticTransition = currentPage.transitions.filter({ $0.automaticTransitionTimer != nil })
-                                                                .sorted(by: { $0.automaticTransitionTimer! < $1.automaticTransitionTimer! })
-                                                                .first,
+                                              .min(by: { $0.automaticTransitionTimer! < $1.automaticTransitionTimer! }),
+                                               // swiftlint:disable:previous force_unwrapping
                let automaticTransitionTime = automaticTransition.automaticTransitionTimer {
                 timer = Timer.scheduledTimer(withTimeInterval: automaticTransitionTime, repeats: false, block: { _ in
                     self.perform(transition: automaticTransition)
@@ -77,7 +77,7 @@
     
     // MARK: - Initializers
     
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         loadPrototype()
         setupView()
@@ -105,12 +105,36 @@
         }
     }
     
-    private func setupView(){
+    private func setupView() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        let topConstaint = NSLayoutConstraint(item: imageView, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
-        let bottomConstaint = NSLayoutConstraint(item: imageView, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
-        let leftConstraint = NSLayoutConstraint(item: imageView, attribute: .left, relatedBy: .equal, toItem: self, attribute: .left, multiplier: 1, constant: 0)
-        let rightConstraint = NSLayoutConstraint(item: imageView, attribute: .right, relatedBy: .equal, toItem: self, attribute: .right, multiplier: 1, constant: 0)
+        let topConstaint = NSLayoutConstraint(item: imageView,
+                                              attribute: .top,
+                                              relatedBy: .equal,
+                                              toItem: self,
+                                              attribute: .top,
+                                              multiplier: 1,
+                                              constant: 0)
+        let bottomConstaint = NSLayoutConstraint(item: imageView,
+                                                 attribute: .bottom,
+                                                 relatedBy: .equal,
+                                                 toItem: self,
+                                                 attribute: .bottom,
+                                                 multiplier: 1,
+                                                 constant: 0)
+        let leftConstraint = NSLayoutConstraint(item: imageView,
+                                                attribute: .left,
+                                                relatedBy: .equal,
+                                                toItem: self,
+                                                attribute: .left,
+                                                multiplier: 1,
+                                                constant: 0)
+        let rightConstraint = NSLayoutConstraint(item: imageView,
+                                                 attribute: .right,
+                                                 relatedBy: .equal,
+                                                 toItem: self,
+                                                 attribute: .right,
+                                                 multiplier: 1,
+                                                 constant: 0)
         
         self.addSubview(imageView)
         self.addConstraints([topConstaint, bottomConstaint, leftConstraint, rightConstraint])
@@ -122,7 +146,7 @@
         #elseif os(iOS) || os(tvOS)
             imageView.contentMode = .scaleToFill
             
-            let touchRecognizer = UITapGestureRecognizer(target:self, action: #selector(outsideTap(touchRecognizer:)))
+            let touchRecognizer = UITapGestureRecognizer(target: self, action: #selector(outsideTap(touchRecognizer:)))
             self.addGestureRecognizer(touchRecognizer)
         #endif
     }
@@ -132,8 +156,10 @@
             imageView.image = image
             
             #if os(OSX)
-                imageView.setContentCompressionResistancePriority(NSLayoutConstraint.Priority.defaultLow, for: NSLayoutConstraint.Orientation.horizontal)
-                imageView.setContentCompressionResistancePriority(NSLayoutConstraint.Priority.defaultLow, for: NSLayoutConstraint.Orientation.vertical)
+                imageView.setContentCompressionResistancePriority(NSLayoutConstraint.Priority.defaultLow,
+                                                                  for: NSLayoutConstraint.Orientation.horizontal)
+                imageView.setContentCompressionResistancePriority(NSLayoutConstraint.Priority.defaultLow,
+                                                                  for: NSLayoutConstraint.Orientation.vertical)
                 self.setNeedsDisplay(self.frame)
             #elseif os(iOS) || os(tvOS)
                 self.setNeedsDisplay()
@@ -143,7 +169,7 @@
     
     // MARK: - Drawing
     
-    open override func draw(_ rect: CGRect) {
+    override open func draw(_ rect: CGRect) {
         super.draw(rect)
         
         guard let currentPage = currentPage,
@@ -155,10 +181,10 @@
             subView.removeFromSuperview()
         }
         
-        let scale = CGVector(dx: self.bounds.size.width/image.size.width,
-                             dy: self.bounds.size.height/image.size.height)
+        let scale = CGVector(dx: self.bounds.size.width / image.size.width,
+                             dy: self.bounds.size.height / image.size.height)
         for prototypeTransition in currentPage.transitions {
-            let button = Button(frame: prototypeTransition.frame*scale)
+            let button = Button(frame: prototypeTransition.frame * scale)
             button.tag = prototypeTransition.id
             
             #if os(OSX)
@@ -177,7 +203,9 @@
                     }
                 #endif
             #elseif os(iOS) || os(tvOS)
-                button.addTarget(self, action: #selector(buttonPressed(button:)), for: UIControl.Event.primaryActionTriggered)
+                button.addTarget(self,
+                                 action: #selector(buttonPressed(button:)),
+                                 for: UIControl.Event.primaryActionTriggered)
                 
                 #if os(tvOS)
                     button.backgroundColor = Constants.buttonColor
@@ -193,23 +221,27 @@
         }
     }
     
-    private func perform(transition: PrototypeTransition) {
+    private func perform(transition: PrototypeTransition) { // swiftlint:disable:this function_body_length
         timer?.invalidate()
+        
+        guard let currentPage = currentPage else {
+            return
+        }
         
         let (destinationPageId, transitionType): (Int, PrototypeTransitionType) = {
             switch transition.destination {
             case let .page(destinationPageId):
-                transitionHistory.append((currentPage!.id, transition.transitionType))
+                transitionHistory.append((currentPage.id, transition.transitionType))
                 return (destinationPageId, transition.transitionType)
             case .back:
                 let lastTransition = transitionHistory.popLast()
-                return (lastTransition?.originalPageId ?? currentPage!.id,
+                return (lastTransition?.originalPageId ?? currentPage.id,
                         !(lastTransition?.transitionType ?? .none))
             }
         }()
         delegate?.willChange(toPageID: destinationPageId)
         
-        guard let destinationPage = prototype?.pages.filter({$0.id == destinationPageId}).first,
+        guard let destinationPage = prototype?.pages.first(where: { $0.id == destinationPageId }),
               let destinationImage = destinationPage.image else {
             return
         }
@@ -263,11 +295,12 @@
                 completion()
             })
         #elseif os(iOS) || os(tvOS)
-            View.animate(withDuration: Constants.animationTime, animations: {
+            View.animate(withDuration: Constants.animationTime,
+                         animations: {
                 destinationImageView.transform = .identity
                 destinationImageView.alpha = 1.0
                 self.imageView.transform = currentImageViewTransform
-            }, completion: { (finished: Bool) in
+            }, completion: { (_: Bool) in
                 destinationImageView.removeFromSuperview()
                 self.imageView.transform = .identity
                 completion()
@@ -278,7 +311,7 @@
     // MARK: - User Interaction
     
     @objc func buttonPressed(button: Button) {
-        guard let transition = currentPage?.transitions.filter({$0.id == button.tag}).first else {
+        guard let transition = currentPage?.transitions.first(where: { $0.id == button.tag }) else {
             return
         }
         
@@ -303,10 +336,16 @@
                     button.layer?.backgroundColor = Color.clear.cgColor
                 })
             #elseif os(iOS) || os(tvOS)
-                View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: 0.0, options: UIView.AnimationOptions.allowUserInteraction, animations: {
+                View.animate(withDuration: Constants.fadeInAndOutButtonsTime,
+                             delay: 0.0,
+                             options: UIView.AnimationOptions.allowUserInteraction,
+                             animations: {
                     button.backgroundColor = Constants.buttonColor
-                }, completion: { (finished: Bool) in
-                    View.animate(withDuration: Constants.fadeInAndOutButtonsTime, delay: Constants.showButtonsTime, options: UIView.AnimationOptions.allowUserInteraction, animations: {
+                }, completion: { (_: Bool) in
+                    View.animate(withDuration: Constants.fadeInAndOutButtonsTime,
+                                 delay: Constants.showButtonsTime,
+                                 options: UIView.AnimationOptions.allowUserInteraction,
+                                 animations: {
                         button.backgroundColor = .clear
                     })
                 })
