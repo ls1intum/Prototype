@@ -42,7 +42,7 @@
         }
     }
     @IBInspectable public var showTransitionsInIB: Bool = false
-    @IBOutlet public weak var delegate: PrototypeViewDelegate?
+    @IBOutlet public weak var delegate: PrototypeViewDelegate? // swiftlint:disable:this private_outlet
     
     var prototype: Prototype? {
         didSet {
