@@ -17,7 +17,7 @@
     func didChange(toPageID pageID: Int)
 }
 
-@IBDesignable public class PrototypeView: View {
+@IBDesignable public class PrototypeView: XPView {
     
     private enum Constants {
         static let buttonColor = #colorLiteral(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
@@ -295,7 +295,7 @@
                 completion()
             })
         #elseif os(iOS) || os(tvOS)
-            View.animate(withDuration: Constants.animationTime,
+            XPView.animate(withDuration: Constants.animationTime,
                          animations: {
                 destinationImageView.transform = .identity
                 destinationImageView.alpha = 1.0
@@ -336,13 +336,13 @@
                     button.layer?.backgroundColor = Color.clear.cgColor
                 })
             #elseif os(iOS) || os(tvOS)
-                View.animate(withDuration: Constants.fadeInAndOutButtonsTime,
+                XPView.animate(withDuration: Constants.fadeInAndOutButtonsTime,
                              delay: 0.0,
                              options: UIView.AnimationOptions.allowUserInteraction,
                              animations: {
                     button.backgroundColor = Constants.buttonColor
                 }, completion: { (_: Bool) in
-                    View.animate(withDuration: Constants.fadeInAndOutButtonsTime,
+                    XPView.animate(withDuration: Constants.fadeInAndOutButtonsTime,
                                  delay: Constants.showButtonsTime,
                                  options: UIView.AnimationOptions.allowUserInteraction,
                                  animations: {

@@ -10,8 +10,7 @@ import Foundation
 
 #if os(OSX)
     import Cocoa
-    
-    public typealias View = NSView
+    public typealias XPView = NSView
     typealias Label = NSTextField
     typealias Button = NSButton
     typealias Image = NSImage
@@ -21,7 +20,7 @@ import Foundation
 #elseif os(iOS) || os(tvOS)
     import UIKit
     
-    public typealias View = UIView
+    public typealias XPView = UIView
     typealias Label = UILabel
     typealias Button = UIButton
     typealias Image = UIImage
@@ -44,7 +43,7 @@ import Foundation
         var transform: CGAffineTransform {
             set {
                 wantsLayer = true
-                layer?.setAffineTransform(transform)
+                layer?.setAffineTransform(newValue)
             }
             get {
                 wantsLayer = true

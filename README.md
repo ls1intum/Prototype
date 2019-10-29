@@ -42,6 +42,15 @@ Create a .prototype file based on a prototype created with [Marvel App](https://
     ```
 
 2. Add the .prototype file created with the Prototype-Application to your Xcode project and the corresponding target.
+
+### Swift UI
+
+3. Add a `PrototypeContainer` to your SwiftUI View. You need to set the `prototypeName` and optionally the `startPage` of the prototype.
+4. You can immediately see the result displayed in the SwiftUI Live Preview.
+5. Build and run your application.
+
+### UIKit or AppKit
+
 3. Add a `PrototypeView` to the corresponding interface using the Xcode Interface Builder or code. You can completely configure the `PrototyperView` in the Xcode Interface Builder's Attributes Inspector. You need to set the `prototypeName` and optionally the `startPage` of the prototype.
 4. You can immediately see the result displayed in the Xcode Interface Builder. To inspect if you configured the right prototype page you can enable the `showButtonsInIB` attribute in the Xcode Interface Builder's Attributes Inspector.
 5. Build and run your application.
